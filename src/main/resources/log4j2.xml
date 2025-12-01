@@ -1,23 +1,24 @@
-<Configuration xmlns="https://logging.apache.org/xml/ns"
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:schemaLocation="
-                   https://logging.apache.org/xml/ns
-                   https://logging.apache.org/xml/ns/log4j-config-2.xsd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
     <Appenders>
-        <File name="FILE_JSON" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}.log">
-            <JsonTemplateLayout eventTemplateUri="classpath:LogLayout.json"/>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <File name="FILE" fileName="logs/app.log" append="false">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
     </Appenders>
-
     <Loggers>
+        <Logger name="academy" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FILE"/>
+        </Logger>
         <Logger name="com.sun" level="WARN"/>
         <Logger name="jdk.event.security" level="INFO"/>
         <Logger name="sun.rmi" level="WARN"/>
         <Logger name="sun.rmi.transport" level="WARN"/>
-
         <Root level="INFO">
-            <AppenderRef ref="FILE_JSON"/>
+            <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
 </Configuration>
