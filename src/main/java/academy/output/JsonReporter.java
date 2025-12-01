@@ -10,23 +10,22 @@ import java.nio.file.Path;
 
 public class JsonReporter implements Reporter {
 
-  private final ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-  public JsonReporter() {
-    this.mapper = JsonMapper.builder()
-                      .addModule(new JavaTimeModule())
-                      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                      .enable(SerializationFeature.INDENT_OUTPUT)
-                      .build();
-  }
-
-  @Override
-  public void write(LogStatistics stats, Path outputPath) {
-    try {
-      mapper.writeValue(outputPath.toFile(), stats);
-    } catch (IOException e) {
-      throw new RuntimeException(
-          "Не удалось записать JSON-отчёт: " + e.getMessage(), e);
+    public JsonReporter() {
+        this.mapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .build();
     }
-  }
+
+    @Override
+    public void write(LogStatistics stats, Path outputPath) {
+        try {
+            mapper.writeValue(outputPath.toFile(), stats);
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось записать JSON-отчёт: " + e.getMessage(), e);
+        }
+    }
 }

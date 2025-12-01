@@ -3,47 +3,70 @@ package academy.parsing;
 import java.time.LocalDateTime;
 
 public class LogEntry {
-  private final LocalDateTime timestamp;
-  private final String remoteAddr;
-  private final int statusCode;
-  private final long responseSizeBytes;
-  private final String resource;
-  private final String protocol;
-  private final String userAgent;
-  private final String referer;
+    private final LocalDateTime timestamp;
+    private final String remoteAddr;
+    private final int statusCode;
+    private final long responseSizeBytes;
+    private final String resource;
+    private final String protocol;
+    private final String userAgent;
+    private final String referer;
 
-  public LogEntry(LocalDateTime timestamp, String remoteAddr, int statusCode,
-                  long responseSizeBytes, String resource, String protocol,
-                  String referer, String userAgent) {
-    this.timestamp = timestamp;
-    this.remoteAddr = remoteAddr;
-    this.statusCode = statusCode;
-    this.responseSizeBytes = responseSizeBytes;
-    this.resource = resource;
-    this.protocol = protocol;
-    this.referer = referer;
-    this.userAgent = userAgent;
-  }
-  public LocalDateTime getTimestamp() { return timestamp; }
+    public LogEntry(
+            LocalDateTime timestamp,
+            String remoteAddr,
+            int statusCode,
+            long responseSizeBytes,
+            String resource,
+            String protocol,
+            String referer,
+            String userAgent) {
+        this.timestamp = timestamp;
+        this.remoteAddr = remoteAddr;
+        this.statusCode = statusCode;
+        this.responseSizeBytes = responseSizeBytes;
+        this.resource = resource;
+        this.protocol = protocol;
+        this.referer = referer;
+        this.userAgent = userAgent;
+    }
 
-  public String getRemoteAddr() { return remoteAddr; }
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
 
-  public int getStatusCode() { return statusCode; }
+    public String getRemoteAddr() {
+        return remoteAddr;
+    }
 
-  public long getResponseSizeBytes() { return responseSizeBytes; }
+    public int getStatusCode() {
+        return statusCode;
+    }
 
-  public String getResource() { return resource; }
+    public long getResponseSizeBytes() {
+        return responseSizeBytes;
+    }
 
-  public String getProtocol() { return protocol; }
+    public String getResource() {
+        return resource;
+    }
 
-  public String getUserAgent() { return userAgent; }
+    public String getProtocol() {
+        return protocol;
+    }
 
-  public String getReferer() { return referer; }
+    public String getUserAgent() {
+        return userAgent;
+    }
 
-  @Override
-  public String toString() {
-    return "LogEntry{"
-        + "timestamp=" + timestamp + ", statusCode=" + statusCode +
-        ", resource='" + resource + '\'' + '}';
-  }
+    public String getReferer() {
+        return referer;
+    }
+
+    @Override
+    public String toString() {
+        return "LogEntry{"
+                + "timestamp=" + timestamp + ", statusCode=" + statusCode + ", resource='"
+                + resource + '\'' + '}';
+    }
 }

@@ -3,9 +3,10 @@ package academy.io;
 import java.util.stream.Stream;
 
 public interface LogSource extends AutoCloseable {
-  Stream<String> lines();
+    Stream<String> lines();
 
-  String getSourceIdentifier();
+    String getSourceIdentifier();
 
-  @Override void close();
+    @Override
+    void close();
 }

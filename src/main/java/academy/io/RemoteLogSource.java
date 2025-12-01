@@ -12,64 +12,61 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class RemoteLogSource implements LogSource {
-  private static final Logger logger =
-      LogManager.getLogger(RemoteLogSource.class);
+    private static final Logger logger = LogManager.getLogger(RemoteLogSource.class);
 
-  private final String url;
-  private BufferedReader reader;
-  private boolean alreadyRead = false;
+    private final String url;
+    private BufferedReader reader;
+    private boolean alreadyRead = false;
 
-  public RemoteLogSource(String url) { this.url = url; }
-
-  @Override
-  public Stream<String> lines() {
-    if (alreadyRead) {
-      throw new IllegalStateException("Stream уже был прочитан");
+    public RemoteLogSource(String url) {
+        this.url = url;
     }
-    alreadyRead = true;
 
-    try {
-      HttpClient client = HttpClient.newHttpClient();
-      HttpRequest request =
-          HttpRequest.newBuilder()
-              .uri(URI.create(url))
-              .header("User-Agent", "Mozilla/5.0 (log-analyzer)")
-              .timeout(java.time.Duration.ofSeconds(10))
-              .GET()
-              .build();
+    @Override
+    public Stream<String> lines() {
+        if (alreadyRead) {
+            throw new IllegalStateException("Stream уже был прочитан");
+        }
+        alreadyRead = true;
 
-      HttpResponse<String> response =
-          client.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", "Mozilla/5.0 (log-analyzer)")
+                    .timeout(java.time.Duration.ofSeconds(10))
+                    .GET()
+                    .build();
 
-      if (response.statusCode() != 200) {
-        throw new IllegalArgumentException("Ошибка загрузки " + url + ": " +
-                                           response.statusCode());
-      }
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-      reader = new BufferedReader(new StringReader(response.body()));
-      return reader.lines().onClose(this::close);
+            if (response.statusCode() != 200) {
+                throw new IllegalArgumentException("Ошибка загрузки " + url + ": " + response.statusCode());
+            }
 
-    } catch (IOException | InterruptedException e) {
-      logger.error("Ошибка при чтении удалённого лога {}: {}", url,
-                   e.getMessage());
-      close();
-      throw new RuntimeException(e);
+            reader = new BufferedReader(new StringReader(response.body()));
+            return reader.lines().onClose(this::close);
+
+        } catch (IOException | InterruptedException e) {
+            logger.error("Ошибка при чтении удалённого лога {}: {}", url, e.getMessage());
+            close();
+            throw new RuntimeException(e);
+        }
     }
-  }
 
-  @Override
-  public String getSourceIdentifier() {
-    return url;
-  }
-
-  @Override
-  public void close() {
-    if (reader != null) {
-      try {
-        reader.close();
-      } catch (IOException ignored) {
-      }
-      reader = null;
+    @Override
+    public String getSourceIdentifier() {
+        return url;
     }
-  }
+
+    @Override
+    public void close() {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException ignored) {
+            }
+            reader = null;
+        }
+    }
 }

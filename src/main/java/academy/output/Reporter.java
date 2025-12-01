@@ -4,5 +4,5 @@ import academy.stats.LogStatistics;
 import java.nio.file.Path;
 
 public interface Reporter {
-  void write(LogStatistics stats, Path outputPath);
+    void write(LogStatistics stats, Path outputPath);
 }
