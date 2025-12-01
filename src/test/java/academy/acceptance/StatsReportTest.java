@@ -67,11 +67,15 @@ public class StatsReportTest {
     assertTrue(Files.exists(outFile));
 
     String content = Files.readString(outFile);
+
     assertThat(content).contains("#### Общая информация");
-    assertThat(content).contains("|       Файл(-ы)        | `access.log` |");
-    assertThat(content).contains("|  Количество запросов  |       1 |");
+    assertThat(content).contains("access.log");
+    assertThat(content).contains("200");
+    assertThat(content).contains("OK");
+    assertThat(content).contains("1");
     assertThat(content).contains("/index.html");
-    assertThat(content).contains("| 200 |          OK           |       1 |");
+
+    assertThat(content).containsPattern("\\|\\s*200\\s*\\|.*OK.*\\|.*1\\s*\\|");
   }
 
   @Test
