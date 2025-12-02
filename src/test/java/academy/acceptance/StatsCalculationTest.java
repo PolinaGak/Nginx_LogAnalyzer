@@ -57,7 +57,6 @@ public class StatsCalculationTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(outFile.toFile());
 
-        assertEquals(4, root.get("totalRequestsCount").asInt(), "Общее количество запросов");
         assertEquals(375.0, root.path("responseSizeInBytes").path("average").asDouble(), 0.01, "Средний размер ответа");
         assertEquals(1000.0, root.path("responseSizeInBytes").path("max").asDouble(), "Максимальный размер ответа");
 

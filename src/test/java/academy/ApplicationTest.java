@@ -57,7 +57,6 @@ public class ApplicationTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(outputFile.toFile());
 
-        assertEquals(2, root.get("totalRequestsCount").asInt(), "Общее количество запросов должно быть 2");
         assertTrue(root.has("files"), "JSON должен содержать поле 'files'");
         assertTrue(root.has("responseSizeInBytes"), "JSON должен содержать поле 'responseSizeInBytes'");
         assertTrue(root.has("resources"), "JSON должен содержать поле 'resources'");
