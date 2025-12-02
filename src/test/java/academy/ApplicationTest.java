@@ -13,46 +13,40 @@ import picocli.CommandLine;
 public class ApplicationTest {
 
     private Path tempDir;
-    private Path logFile;
-    private Path outputFile;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        tempDir = Files.createTempDirectory("application_test");
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        try (var stream = Files.walk(tempDir)) {
+            stream.sorted(java.util.Comparator.reverseOrder()).map(Path::toFile).forEach(java.io.File::delete);
+        }
+    }
+
+    private Path createSampleLogFile(String content) throws IOException {
+        Path logFile = tempDir.resolve("sample.log");
+        Files.writeString(logFile, content);
+        return logFile;
+    }
 
     private int runApp(String... args) {
         return new CommandLine(new academy.Application()).execute(args);
     }
 
-    @BeforeEach
-    void setUp() throws IOException {
-        tempDir = Files.createTempDirectory("application_test");
-
+    @Test
+    @DisplayName("Базовая проверка работоспособности программы")
+    void happyPathTest() throws IOException {
         String logContent = "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET /index.html "
                 + "HTTP/1.1\" 200 1234 \"-\" \"Mozilla/5.0\"" + System.lineSeparator()
                 + "93.180.71.4 - - [17/May/2015:08:06:32 +0000] \"GET /about.html "
                 + "HTTP/1.1\" 404 0 \"-\" \"Mozilla/5.0\"" + System.lineSeparator();
 
-        logFile = tempDir.resolve("access.log");
-        Files.writeString(logFile, logContent);
+        Path logFile = createSampleLogFile(logContent);
+        Path outputFile = tempDir.resolve("report.json");
 
-        outputFile = tempDir.resolve("report.json");
-    }
-
-    @AfterEach
-    void tearDown() throws IOException {
-        if (tempDir != null && Files.exists(tempDir)) {
-            try (var stream = Files.walk(tempDir)) {
-                stream.sorted(java.util.Comparator.reverseOrder()).forEach(path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        System.err.println("Ошибка при удалении " + path + ": " + e.getMessage());
-                    }
-                });
-            }
-        }
-    }
-
-    @Test
-    @DisplayName("Базовая проверка работоспособности программы")
-    void happyPathTest() throws IOException {
         String[] args = {"--path", logFile.toString(), "--format", "json", "--output", outputFile.toString()};
 
         int exitCode = runApp(args);

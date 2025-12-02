@@ -12,6 +12,15 @@ import org.junit.jupiter.params.provider.*;
 
 public class ArgumentValidationTest {
 
+    private static final String[] SAMPLE_LOG_LINES = {
+        "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET "
+                + "/downloads/product_1 HTTP/1.1\" 304 0 \"-\" \"Debian APT-HTTP/1.3 "
+                + "(0.8.16~exp12ubuntu10.21)\"",
+        "93.180.71.3 - - [17/May/2015:08:05:23 +0000] \"GET "
+                + "/downloads/product_1 HTTP/1.1\" 304 0 \"-\" \"Debian APT-HTTP/1.3 "
+                + "(0.8.16~exp12ubuntu10.21)\""
+    };
+
     private Path tempDir;
 
     @BeforeEach
@@ -24,6 +33,12 @@ public class ArgumentValidationTest {
         try (var stream = Files.walk(tempDir)) {
             stream.sorted(java.util.Comparator.reverseOrder()).map(Path::toFile).forEach(java.io.File::delete);
         }
+    }
+
+    private Path createSampleLogFile(String... lines) throws IOException {
+        Path logFile = tempDir.resolve("sample.log");
+        Files.write(logFile, java.util.Arrays.asList(lines));
+        return logFile;
     }
 
     private int runApp(String... args) {
@@ -48,7 +63,7 @@ public class ArgumentValidationTest {
     void test2() {
         int exitCode = runApp(
                 "--path",
-                "https://httpstat.us/404",
+                "https://httpstat.us/404  ",
                 "--format",
                 "json",
                 "--output",
@@ -75,10 +90,11 @@ public class ArgumentValidationTest {
     @ParameterizedTest
     @ValueSource(strings = {"2025.01.01", "today", "2025/13/01", "invalid-date"})
     @DisplayName("На вход переданы невалидные параметры --from / --to - {0}")
-    void test4(String date) {
+    void test4(String date) throws IOException {
+        Path logFile = createSampleLogFile(SAMPLE_LOG_LINES);
         String[] args = {
             "--path",
-            "logs/access.log",
+            logFile.toString(),
             "--format",
             "json",
             "--output",
@@ -93,10 +109,11 @@ public class ArgumentValidationTest {
     @ParameterizedTest
     @MethodSource("test6ArgumentsSource")
     @DisplayName("По пути в аргументе --output указан файл с некорректным расширением")
-    void test6(String format, String output) {
+    void test6(String format, String output) throws IOException {
+        Path logFile = createSampleLogFile(SAMPLE_LOG_LINES);
         int exitCode = runApp(
                 "--path",
-                "logs/access.log",
+                logFile.toString(),
                 "--format",
                 format,
                 "--output",
@@ -109,27 +126,30 @@ public class ArgumentValidationTest {
     void test7() throws IOException {
         Path existing = tempDir.resolve("existing.json");
         Files.createFile(existing);
-        int exitCode = runApp("--path", "logs/access.log", "--format", "json", "--output", existing.toString());
+        Path logFile = createSampleLogFile(SAMPLE_LOG_LINES);
+        int exitCode = runApp("--path", logFile.toString(), "--format", "json", "--output", existing.toString());
         assertEquals(2, exitCode);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"--path", "--output", "--format", "-p", "-o", "-f"})
     @DisplayName("На вход не передан обязательный параметр \"{0}\"")
-    void test8(String missingArg) {
-        String[] args = {
-            "--path", "logs/access.log",
+    void test8(String missingArg) throws IOException {
+        Path logFile = createSampleLogFile(SAMPLE_LOG_LINES);
+        String[] baseArgs = {
+            "--path", logFile.toString(),
             "--format", "json",
             "--output", tempDir.resolve("out.json").toString()
         };
+
         java.util.List<String> argList = new java.util.ArrayList<>();
-        for (int i = 0; i < args.length; i += 2) {
-            if (!args[i].equals(missingArg)
-                    && !(missingArg.equals("-p") && args[i].equals("--path"))
-                    && !(missingArg.equals("-f") && args[i].equals("--format"))
-                    && !(missingArg.equals("-o") && args[i].equals("--output"))) {
-                argList.add(args[i]);
-                argList.add(args[i + 1]);
+        for (int i = 0; i < baseArgs.length; i += 2) {
+            if (!baseArgs[i].equals(missingArg)
+                    && !(missingArg.equals("-p") && baseArgs[i].equals("--path"))
+                    && !(missingArg.equals("-f") && baseArgs[i].equals("--format"))
+                    && !(missingArg.equals("-o") && baseArgs[i].equals("--output"))) {
+                argList.add(baseArgs[i]);
+                argList.add(baseArgs[i + 1]);
             }
         }
         int exitCode = runApp(argList.toArray(new String[0]));
@@ -139,10 +159,11 @@ public class ArgumentValidationTest {
     @ParameterizedTest
     @ValueSource(strings = {"--input", "--filter"})
     @DisplayName("На вход передан неподдерживаемый параметр \"{0}\"")
-    void test9(String arg) {
+    void test9(String arg) throws IOException {
+        Path logFile = createSampleLogFile(SAMPLE_LOG_LINES);
         int exitCode = runApp(
                 "--path",
-                "logs/access.log",
+                logFile.toString(),
                 "--format",
                 "json",
                 "--output",
@@ -154,10 +175,11 @@ public class ArgumentValidationTest {
 
     @Test
     @DisplayName("Значение параметра --from больше, чем значение параметра --to")
-    void test10() {
+    void test10() throws IOException {
+        Path logFile = createSampleLogFile(SAMPLE_LOG_LINES);
         int exitCode = runApp(
                 "--path",
-                "logs/access.log",
+                logFile.toString(),
                 "--format",
                 "json",
                 "--output",

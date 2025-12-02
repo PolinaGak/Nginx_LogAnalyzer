@@ -26,6 +26,12 @@ public class StatsReportTest {
         }
     }
 
+    private Path createSampleLogFile(String content) throws IOException {
+        Path logFile = tempDir.resolve("sample.log");
+        Files.writeString(logFile, content);
+        return logFile;
+    }
+
     private int runApp(String... args) {
         return new picocli.CommandLine(new academy.Application()).execute(args);
     }
@@ -35,8 +41,7 @@ public class StatsReportTest {
     void jsonTest() throws IOException {
         String logContent = "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET "
                 + "/index.html HTTP/1.1\" 200 1234 \"-\" \"agent\"\n";
-        Path logFile = tempDir.resolve("access.log");
-        Files.writeString(logFile, logContent);
+        Path logFile = createSampleLogFile(logContent);
         Path outFile = tempDir.resolve("report.json");
 
         int exitCode = runApp("--path", logFile.toString(), "--format", "json", "--output", outFile.toString());
@@ -46,7 +51,7 @@ public class StatsReportTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(outFile.toFile());
         assertEquals(1, root.get("totalRequestsCount").asInt());
-        assertEquals("access.log", root.get("files").get(0).asText());
+        assertEquals(logFile.getFileName().toString(), root.get("files").get(0).asText());
     }
 
     @Test
@@ -54,8 +59,7 @@ public class StatsReportTest {
     void markdownTest() throws IOException {
         String logContent = "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET "
                 + "/index.html HTTP/1.1\" 200 1234 \"-\" \"agent\"\n";
-        Path logFile = tempDir.resolve("access.log");
-        Files.writeString(logFile, logContent);
+        Path logFile = createSampleLogFile(logContent);
         Path outFile = tempDir.resolve("report.md");
 
         int exitCode = runApp("--path", logFile.toString(), "--format", "markdown", "--output", outFile.toString());
@@ -63,9 +67,10 @@ public class StatsReportTest {
         assertTrue(Files.exists(outFile));
 
         String content = Files.readString(outFile);
+        String fileName = logFile.getFileName().toString();
 
         assertThat(content).contains("#### Общая информация");
-        assertThat(content).contains("access.log");
+        assertThat(content).contains(fileName);
         assertThat(content).contains("200");
         assertThat(content).contains("OK");
         assertThat(content).contains("1");
@@ -77,22 +82,16 @@ public class StatsReportTest {
     @Test
     @DisplayName("Сохранение статистики в формате ADOC")
     void adocTest() throws IOException {
-        try {
-            String logContent = "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET /index.html "
-                    + "HTTP/1.1\" 200 1234 \"-\" \"agent\"\n";
-            Path logFile = tempDir.resolve("access.log");
-            Files.writeString(logFile, logContent);
-            Path outFile = tempDir.resolve("report.ad");
+        String logContent = "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET /index.html "
+                + "HTTP/1.1\" 200 1234 \"-\" \"agent\"\n";
+        Path logFile = createSampleLogFile(logContent);
+        Path outFile = tempDir.resolve("report.ad");
 
-            int exitCode = runApp("--path", logFile.toString(), "--format", "adoc", "--output", outFile.toString());
-            assertTrue(exitCode == 0 || exitCode == 2);
+        int exitCode = runApp("--path", logFile.toString(), "--format", "adoc", "--output", outFile.toString());
+        assertEquals(0, exitCode, "Код возврата должен быть 0 при поддерживаемом формате adoc");
+        assertTrue(Files.exists(outFile));
 
-            if (exitCode == 0) {
-                assertTrue(Files.exists(outFile));
-                String content = Files.readString(outFile);
-                assertThat(content).contains("= Отчёт по логам");
-            }
-        } catch (Exception e) {
-        }
+        String content = Files.readString(outFile);
+        assertThat(content).contains("= Отчёт по логам");
     }
 }

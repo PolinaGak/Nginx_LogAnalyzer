@@ -25,6 +25,12 @@ public class StatsCalculationTest {
         }
     }
 
+    private Path createSampleLogFile(String content) throws IOException {
+        Path logFile = tempDir.resolve("sample.log");
+        Files.writeString(logFile, content);
+        return logFile;
+    }
+
     private int runApp(String... args) {
         return new picocli.CommandLine(new academy.Application()).execute(args);
     }
@@ -41,8 +47,7 @@ public class StatsCalculationTest {
                 + "93.180.71.6 - - [18/May/2015:08:07:32 +0000] \"GET "
                 + "/downloads/product_1 HTTP/1.1\" 304 0 \"-\" \"agent4\"\n";
 
-        Path logFile = tempDir.resolve("access.log");
-        Files.writeString(logFile, logContent);
+        Path logFile = createSampleLogFile(logContent);
         Path outFile = tempDir.resolve("stats.json");
 
         int exitCode = runApp("--path", logFile.toString(), "--format", "json", "--output", outFile.toString());
