@@ -56,10 +56,10 @@ public class LocalLogSource implements LogSource {
     }
 
     private List<Path> resolvePaths() {
-        Path path = Paths.get(pathPattern);
+        Path path = Path.of(pathPattern);
         Path parent = path.getParent();
         if (parent == null) {
-            parent = Paths.get(".");
+            parent = Path.of(".");
         }
 
         String fileName = path.getFileName().toString();
@@ -69,7 +69,7 @@ public class LocalLogSource implements LogSource {
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
         logger.debug("Ищем файлы: parent={}, fileName={}", parent, fileName);
-        logger.debug("Рабочая директория: {}", Paths.get("").toAbsolutePath());
+        logger.debug("Рабочая директория: {}", Path.of("").toAbsolutePath());
         logger.debug("Полный путь к родительской папке: {}", parent.toAbsolutePath());
 
         try {

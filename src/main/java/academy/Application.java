@@ -11,7 +11,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -150,7 +149,7 @@ public class Application implements Callable<Integer> {
             return;
         }
 
-        Path p = Paths.get(path);
+        Path p = Path.of(path);
         if (!Files.exists(p)) {
             throw new IllegalArgumentException("Файл не найден: " + path);
         }

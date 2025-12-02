@@ -2,7 +2,7 @@ package academy.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -44,7 +44,7 @@ public class RemoteLogSource implements LogSource {
                 throw new IllegalArgumentException("Ошибка загрузки " + url + ": " + response.statusCode());
             }
 
-            reader = new BufferedReader(new StringReader(response.body()));
+            reader = new BufferedReader(Reader.of(response.body()));
             return reader.lines().onClose(this::close);
 
         } catch (IOException | InterruptedException e) {

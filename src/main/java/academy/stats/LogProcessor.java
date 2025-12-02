@@ -5,7 +5,7 @@ import academy.io.LogSourceFactory;
 import academy.parsing.LogEntry;
 import academy.parsing.NginxLogParser;
 import academy.util.Percentile;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -71,7 +71,8 @@ public class LogProcessor {
                             return p;
                         }
                     } else {
-                        java.nio.file.Path path = Paths.get(p);
+                        // ИСПРАВЛЕНО: Paths.get() -> Path.of()
+                        Path path = Path.of(p);
                         return path.getFileName() != null ? path.getFileName().toString() : p;
                     }
                 })
