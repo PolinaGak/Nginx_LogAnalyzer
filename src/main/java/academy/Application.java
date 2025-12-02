@@ -145,18 +145,27 @@ public class Application implements Callable<Integer> {
     }
 
     private void validateLocalPath(String path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Путь не может быть null");
+        }
+
         if (path.contains("*")) {
             return;
         }
 
         Path p = Path.of(path);
         if (!Files.exists(p)) {
-            throw new IllegalArgumentException("Файл не найден: " + path);
+            throw new IllegalArgumentException(String.format("Файл '%s' не найден", path));
         }
 
-        String name = p.getFileName().toString().toLowerCase();
+        Path fileName = p.getFileName();
+        if (fileName == null) {
+            throw new IllegalArgumentException(String.format("Некорректный путь: %s", path));
+        }
+
+        String name = fileName.toString().toLowerCase();
         if (!name.endsWith(".log") && !name.endsWith(".txt")) {
-            throw new IllegalArgumentException("Файл должен иметь расширение .log или .txt: " + path);
+            throw new IllegalArgumentException(String.format("Файл должен иметь расширение .log или .txt: %s", path));
         }
     }
 
@@ -186,9 +195,12 @@ public class Application implements Callable<Integer> {
     }
 
     private String getFileExtension(Path path) {
-        String name = path.getFileName().toString();
-        int i = name.lastIndexOf('.');
-        return i == -1 ? "" : name.substring(i);
+        if (path == null || path.getFileName() == null) {
+            return "";
+        }
+        String fileName = path.getFileName().toString();
+        int i = fileName.lastIndexOf('.');
+        return i == -1 ? "" : fileName.substring(i);
     }
 
     public static void main(String[] args) {

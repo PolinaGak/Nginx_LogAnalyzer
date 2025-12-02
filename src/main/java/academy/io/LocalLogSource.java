@@ -62,7 +62,11 @@ public class LocalLogSource implements LogSource {
             parent = Path.of(".");
         }
 
-        String fileName = path.getFileName().toString();
+        Path fileNamePath = path.getFileName();
+        if (fileNamePath == null) {
+            return List.of();
+        }
+        String fileName = fileNamePath.toString();
         FileSystem fs = FileSystems.getDefault();
         PathMatcher matcher = fs.getPathMatcher("glob:" + fileName);
 
