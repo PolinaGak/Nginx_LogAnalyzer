@@ -16,7 +16,7 @@ public class NginxLogParser {
     private static final Logger logger = LogManager.getLogger(NginxLogParser.class);
 
     private static final Pattern LOG_PATTERN =
-            Pattern.compile("^([\\d.]+) - - \\[(.*?)\\] \"(.*?)\" (\\d{3}) " + "(\\d+|-) \"(.*?)\" \"(.*?)\"$");
+            Pattern.compile("^([\\d.]+) - - \\[(.*?)\\] \"(.*?)\" (\\d{3}) " + "(\\d+|-) \"(.*?)\" \"(.*?)\"\\s*$");
 
     private static final DateTimeFormatter TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
