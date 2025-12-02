@@ -25,9 +25,9 @@ public class ApplicationTest {
         tempDir = Files.createTempDirectory("application_test");
 
         String logContent = "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET /index.html "
-                + "HTTP/1.1\" 200 1234 \"-\" \"Mozilla/5.0\"\n"
+                + "HTTP/1.1\" 200 1234 \"-\" \"Mozilla/5.0\"" + System.lineSeparator()
                 + "93.180.71.4 - - [17/May/2015:08:06:32 +0000] \"GET /about.html "
-                + "HTTP/1.1\" 404 0 \"-\" \"Mozilla/5.0\"\n";
+                + "HTTP/1.1\" 404 0 \"-\" \"Mozilla/5.0\"" + System.lineSeparator();
 
         logFile = tempDir.resolve("access.log");
         Files.writeString(logFile, logContent);
