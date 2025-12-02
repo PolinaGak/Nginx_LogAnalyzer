@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 public class LogProcessor {
     private static final Logger logger = LogManager.getLogger(LogProcessor.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
     private static final int TOP_RESOURCES_LIMIT = 10;
 
     private final List<String> sourcePaths;
