@@ -221,20 +221,24 @@ public class Application implements Callable<Integer> {
             if (isUrl(path)) {
                 resolved.add(path);
             } else if (path.contains("*") || path.contains("?")) {
-                // Это glob-паттерн — раскрываем
                 Path patternPath = Path.of(path);
                 Path parent = Optional.ofNullable(patternPath.getParent()).orElse(Path.of("."));
-                String fileNamePattern = patternPath.getFileName().toString();
+                Path fileNamePath = patternPath.getFileName();
+
+                if (fileNamePath == null) {
+                    logger.warn("Некорректный путь без имени файла: {}", path);
+                    continue;
+                }
+
+                String fileNamePattern = fileNamePath.toString();
 
                 try {
                     FileSystem fs = FileSystems.getDefault();
                     PathMatcher matcher = fs.getPathMatcher("glob:" + parent.resolve(fileNamePattern));
 
-                    // Используем walk с глубиной 1, как в LocalLogSource
                     List<Path> matches = Files.walk(parent, 1)
                             .filter(Files::isRegularFile)
                             .filter(p -> {
-                                // На Windows — игнорируем регистр
                                 if (System.getProperty("os.name").toLowerCase().contains("win")) {
                                     return p.getFileName()
                                                     .toString()
@@ -257,10 +261,9 @@ public class Application implements Callable<Integer> {
                     matches.stream().map(Path::toString).forEach(resolved::add);
                 } catch (IOException e) {
                     logger.error("Ошибка при раскрытии шаблона {}: {}", path, e.getMessage());
-                    resolved.add(path); // fallback, хотя лучше выбросить
+                    resolved.add(path);
                 }
             } else {
-                // Обычный путь — оставляем как есть
                 resolved.add(path);
             }
         }
