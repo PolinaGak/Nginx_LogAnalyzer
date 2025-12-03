@@ -45,7 +45,24 @@
         <Class name="academy.output.MarkdownReporter"/>
         <Method name="write"/>
     </Match>
+   <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto"/>
+    </Match>
     <Match>
-        <Class name="academy.output.JsonReporter"/>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$ResponseSizeDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$ResourceDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$ResponseCodeDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$RequestsPerDateDto"/>
     </Match>
 </FindBugsFilter>
