@@ -40,9 +40,9 @@
         <Method name="getFileExtension"/>
     </Match>
 
-    <Match>
+   <Match>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
         <Class name="academy.output.MarkdownReporter"/>
-        <Method name="getFileExtension"/>
+        <Method name="write"/>
     </Match>
 </FindBugsFilter>
