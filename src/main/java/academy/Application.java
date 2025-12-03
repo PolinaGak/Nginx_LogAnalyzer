@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +37,8 @@ public class Application implements Callable<Integer> {
     @Option(
             names = {"--path", "-p"},
             required = true,
-            description = "Путь к лог-файлам")
+            description = "Путь к лог-файлам",
+            arity = "*")
     private List<String> paths;
 
     @Option(
@@ -221,37 +221,43 @@ public class Application implements Callable<Integer> {
             if (isUrl(path)) {
                 resolved.add(path);
             } else if (path.contains("*") || path.contains("?")) {
-                Path patternPath = Path.of(path);
-                Path parent = Optional.ofNullable(patternPath.getParent()).orElse(Path.of("."));
-                Path fileNamePath = patternPath.getFileName();
+                String parentDir;
+                String fileNamePattern;
 
-                if (fileNamePath == null) {
-                    logger.warn("Некорректный путь без имени файла: {}", path);
+                int lastSep = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+                if (lastSep == -1) {
+                    parentDir = ".";
+                    fileNamePattern = path;
+                } else {
+                    parentDir = path.substring(0, lastSep);
+                    fileNamePattern = path.substring(lastSep + 1);
+                }
+
+                if (fileNamePattern.isEmpty()) {
+                    logger.warn("Пустое имя файла в шаблоне: {}", path);
                     continue;
                 }
 
-                String fileNamePattern = fileNamePath.toString();
+                Path parentPath = Path.of(parentDir);
+                if (!Files.exists(parentPath)) {
+                    logger.warn("Директория не существует: {}", parentDir);
+                    continue;
+                }
+                if (!Files.isDirectory(parentPath)) {
+                    logger.warn("Путь не является директорией: {}", parentDir);
+                    continue;
+                }
+
+                FileSystem fs = FileSystems.getDefault();
+                PathMatcher matcher = fs.getPathMatcher("glob:" + fileNamePattern);
 
                 try {
-                    FileSystem fs = FileSystems.getDefault();
-                    PathMatcher matcher = fs.getPathMatcher("glob:" + parent.resolve(fileNamePattern));
-
-                    List<Path> matches = Files.walk(parent, 1)
+                    List<Path> matches = Files.walk(parentPath, 1)
                             .filter(Files::isRegularFile)
-                            .filter(p -> {
-                                if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                                    return p.getFileName()
-                                                    .toString()
-                                                    .toLowerCase()
-                                                    .equals(fileNamePattern
-                                                            .toLowerCase()
-                                                            .replace("*", "")
-                                                            .replace("?", ""))
-                                            || fs.getPathMatcher("glob:" + fileNamePattern)
-                                                    .matches(p.getFileName());
-                                } else {
-                                    return matcher.matches(p);
-                                }
+                            .filter(file -> {
+                                Path name = file.getFileName();
+                                if (name == null) return false;
+                                return matcher.matches(name);
                             })
                             .collect(Collectors.toList());
 
@@ -260,8 +266,7 @@ public class Application implements Callable<Integer> {
                     }
                     matches.stream().map(Path::toString).forEach(resolved::add);
                 } catch (IOException e) {
-                    logger.error("Ошибка при раскрытии шаблона {}: {}", path, e.getMessage());
-                    resolved.add(path);
+                    logger.error("Ошибка при поиске по шаблону {}: {}", path, e.getMessage());
                 }
             } else {
                 resolved.add(path);

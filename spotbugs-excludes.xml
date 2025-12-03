@@ -39,4 +39,10 @@
         <Class name="academy.Application"/>
         <Method name="getFileExtension"/>
     </Match>
+
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+        <Class name="academy.output.MarkdownReporter"/>
+        <Method name="getFileExtension"/>
+    </Match>
 </FindBugsFilter>

@@ -1,0 +1,52 @@
+{
+  "files" : [ "access.log", "access_copy.log" ],
+  "totalRequestsCount" : 9,
+  "responseSizeInBytes" : {
+    "average" : 61.11,
+    "max" : 300.0,
+    "p95" : 220.0
+  },
+  "resources" : [ {
+    "resource" : "/downloads/product_1",
+    "totalRequestsCount" : 9
+  } ],
+  "responseCodes" : [ {
+    "code" : 304,
+    "totalResponsesCount" : 4
+  }, {
+    "code" : 404,
+    "totalResponsesCount" : 1
+  }, {
+    "code" : 200,
+    "totalResponsesCount" : 4
+  } ],
+  "startDate" : "2015-05-17",
+  "endDate" : "2015-09-01",
+  "requestsPerDate" : [ {
+    "date" : "2015-08-25",
+    "weekday" : "Tuesday",
+    "totalRequestsCount" : 2,
+    "totalRequestsPercentage" : 22.22
+  }, {
+    "date" : "2015-05-20",
+    "weekday" : "Wednesday",
+    "totalRequestsCount" : 1,
+    "totalRequestsPercentage" : 11.11
+  }, {
+    "date" : "2015-08-21",
+    "weekday" : "Friday",
+    "totalRequestsCount" : 1,
+    "totalRequestsPercentage" : 11.11
+  }, {
+    "date" : "2015-09-01",
+    "weekday" : "Tuesday",
+    "totalRequestsCount" : 1,
+    "totalRequestsPercentage" : 11.11
+  }, {
+    "date" : "2015-05-17",
+    "weekday" : "Sunday",
+    "totalRequestsCount" : 4,
+    "totalRequestsPercentage" : 44.44
+  } ],
+  "uniqueProtocols" : [ "HTTP/1.1" ]
+}
