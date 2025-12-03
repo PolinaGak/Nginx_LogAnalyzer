@@ -45,4 +45,7 @@
         <Class name="academy.output.MarkdownReporter"/>
         <Method name="write"/>
     </Match>
+    <Match>
+        <Class name="academy.output.JsonReporter"/>
+    </Match>
 </FindBugsFilter>
