@@ -101,11 +101,11 @@ public class LocalLogSource implements LogSource {
             List<Path> matchedFiles = Files.walk(parent, 1)
                     .filter(Files::isRegularFile)
                     .filter(file -> {
-                        String name = file.getFileName().toString();
+                        Path name = file.getFileName();
                         if (isWindows) {
-                            return name.equalsIgnoreCase(fileName);
+                            return name.toString().equalsIgnoreCase(fileName);
                         } else {
-                            return matcher.matches(file);
+                            return matcher.matches(fileNamePath);
                         }
                     })
                     .collect(Collectors.toList());

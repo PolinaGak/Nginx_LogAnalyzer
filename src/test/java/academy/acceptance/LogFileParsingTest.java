@@ -51,7 +51,6 @@ public class LogFileParsingTest {
     void remoteFileProcessingTest() throws IOException {
         Path outFile = tempDir.resolve("remote.json");
 
-        // Убраны лишние пробелы в URL
         String validLogUrl = "https://gist.githubusercontent.com/PolinaGak/" + "6df5f8ffd6f92bb11ecec71b5255cc8a/raw";
 
         int exitCode = runApp("--path", validLogUrl, "--format", "json", "--output", outFile.toString());

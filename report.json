@@ -1,0 +1,26 @@
+{
+  "files" : [ "access.log" ],
+  "totalRequestsCount" : 2,
+  "responseSizeInBytes" : {
+    "average" : 0.0,
+    "max" : 0.0,
+    "p95" : 0.0
+  },
+  "resources" : [ {
+    "resource" : "/downloads/product_1",
+    "totalRequestsCount" : 2
+  } ],
+  "responseCodes" : [ {
+    "code" : 304,
+    "totalResponsesCount" : 2
+  } ],
+  "startDate" : "2015-05-17",
+  "endDate" : "2015-05-17",
+  "requestsPerDate" : [ {
+    "date" : "2015-05-17",
+    "weekday" : "Sunday",
+    "totalRequestsCount" : 2,
+    "totalRequestsPercentage" : 100.0
+  } ],
+  "uniqueProtocols" : [ "HTTP/1.1" ]
+}
