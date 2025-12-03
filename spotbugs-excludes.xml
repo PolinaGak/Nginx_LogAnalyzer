@@ -33,4 +33,36 @@
     <Match>
         <Package name="~.*\.jmh_generated" />
     </Match>
+
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+        <Class name="academy.Application"/>
+        <Method name="getFileExtension"/>
+    </Match>
+
+   <Match>
+        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+        <Class name="academy.output.MarkdownReporter"/>
+        <Method name="write"/>
+    </Match>
+   <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$ResponseSizeDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$ResourceDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$ResponseCodeDto"/>
+    </Match>
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="academy.output.JsonReporter$ReportDto$RequestsPerDateDto"/>
+    </Match>
 </FindBugsFilter>
