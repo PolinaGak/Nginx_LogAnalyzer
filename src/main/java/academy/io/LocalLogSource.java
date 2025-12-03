@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,67 +55,11 @@ public class LocalLogSource implements LogSource {
     }
 
     private List<Path> resolvePaths() {
-        Path path = Path.of(pathPattern);
-        Path parent = path.getParent();
-        if (parent == null) {
-            parent = Path.of(".");
-        }
-
-        Path fileNamePath = path.getFileName();
-        if (fileNamePath == null) {
-            return List.of();
-        }
-        String fileName = fileNamePath.toString();
-        FileSystem fs = FileSystems.getDefault();
-        PathMatcher matcher = fs.getPathMatcher("glob:" + fileName);
-
-        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-
-        logger.debug("Ищем файлы: parent={}, fileName={}", parent, fileName);
-        logger.debug("Рабочая директория: {}", Path.of("").toAbsolutePath());
-        logger.debug("Полный путь к родительской папке: {}", parent.toAbsolutePath());
-
-        try {
-            if (!Files.exists(parent)) {
-                logger.warn("Родительская директория не существует: {}", parent.toAbsolutePath());
-                return List.of();
-            }
-
-            if (!Files.isDirectory(parent)) {
-                logger.warn("Указанный путь не является директорией: {}", parent.toAbsolutePath());
-                return List.of();
-            }
-
-            logger.debug("Список всех файлов в папке {}:", parent.toAbsolutePath());
-            try {
-                Files.list(parent).filter(Files::isRegularFile).forEach(p -> logger.debug("  - {}", p.getFileName()));
-            } catch (IOException listEx) {
-                logger.error(
-                        "Не удалось прочитать содержимое директории {}: {}",
-                        parent.toAbsolutePath(),
-                        listEx.getMessage(),
-                        listEx);
-            }
-
-            List<Path> matchedFiles = Files.walk(parent, 1)
-                    .filter(Files::isRegularFile)
-                    .filter(file -> {
-                        Path name = file.getFileName();
-                        if (isWindows) {
-                            return name.toString().equalsIgnoreCase(fileName);
-                        } else {
-                            return matcher.matches(fileNamePath);
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-            logger.debug("Найдено файлов по паттерну '{}': {}", fileName, matchedFiles.size());
-            matchedFiles.forEach(p -> logger.debug("  - {}", p.toAbsolutePath()));
-
-            return matchedFiles;
-
-        } catch (IOException e) {
-            logger.error("Ошибка при поиске файлов по шаблону {}: {}", pathPattern, e.getMessage(), e);
+        Path p = Path.of(pathPattern);
+        if (Files.exists(p) && Files.isRegularFile(p)) {
+            return List.of(p);
+        } else {
+            logger.warn("Файл не найден: {}", pathPattern);
             return List.of();
         }
     }

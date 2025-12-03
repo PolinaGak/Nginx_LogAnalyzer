@@ -71,7 +71,6 @@ public class LogProcessor {
                             return p;
                         }
                     } else {
-                        // ИСПРАВЛЕНО: Paths.get() -> Path.of()
                         Path path = Path.of(p);
                         return path.getFileName() != null ? path.getFileName().toString() : p;
                     }
