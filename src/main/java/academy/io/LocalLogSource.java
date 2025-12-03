@@ -38,15 +38,7 @@ public class LocalLogSource implements LogSource {
 
                 BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8);
                 readers.add(reader);
-
-                String firstLine = reader.readLine();
-                if (firstLine != null) {
-                    logger.debug("Первая строка файла {}: '{}'", file, firstLine);
-                    result = Stream.concat(result, Stream.concat(Stream.of(firstLine), reader.lines()));
-                } else {
-                    result = Stream.concat(result, reader.lines());
-                }
-
+                result = Stream.concat(result, reader.lines());
             } catch (IOException e) {
                 logger.error("Ошибка при чтении файла {}: {}", file, e.getMessage(), e);
             }
