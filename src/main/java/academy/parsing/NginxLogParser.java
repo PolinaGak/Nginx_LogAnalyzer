@@ -19,7 +19,7 @@ public class NginxLogParser {
             Pattern.compile("^([\\d.]+) - - \\[(.*?)\\] \"(.*?)\" (\\d{3}) " + "(\\d+|-) \"(.*?)\" \"(.*?)\"\\s*$");
 
     private static final DateTimeFormatter TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.US);
+            DateTimeFormatter.ofPattern("d/MMM/yyyy:HH:mm:ss Z", Locale.US);
 
     public Optional<LogEntry> parse(String line) {
         if (line == null || line.isEmpty()) {

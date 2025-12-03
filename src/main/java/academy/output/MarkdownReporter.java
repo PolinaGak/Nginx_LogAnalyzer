@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class MarkdownReporter implements Reporter {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.US);
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy", Locale.US);
 
     @Override
     public void write(LogStatistics stats, Path outputPath) {
