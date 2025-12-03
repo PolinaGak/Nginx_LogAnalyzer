@@ -13,59 +13,61 @@ import java.util.Locale;
 public class MarkdownReporter implements Reporter {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.US);
+    private static final String LN = "%n";
 
     @Override
     public void write(LogStatistics stats, Path outputPath) {
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(outputPath))) {
-            writer.println("#### Общая информация\n");
 
-            writer.println("|        Метрика        |     Значение |");
-            writer.println("|:---------------------:|-------------:|");
-            writer.printf("|       Файл(-ы)        | `%s` |\n", String.join(", ", stats.getFiles()));
-            writer.printf("|    Начальная дата     | %s |\n", formatDate(stats.getStartDate()));
-            writer.printf("|     Конечная дата     | %s |\n", formatDate(stats.getEndDate()));
-            writer.printf("|  Количество запросов  |       %,d |\n", stats.getTotalRequestsCount());
+            writer.printf("#### Общая информация%s%s", LN, LN);
+
+            writer.printf("|        Метрика        |     Значение |%s", LN);
+            writer.printf("|:---------------------:|-------------:|%s", LN);
+            writer.printf("|       Файл(-ы)        | `%s` |%s", String.join(", ", stats.getFiles()), LN);
+            writer.printf("|    Начальная дата     | %s |%s", formatDate(stats.getStartDate()), LN);
+            writer.printf("|     Конечная дата     | %s |%s", formatDate(stats.getEndDate()), LN);
+            writer.printf("|  Количество запросов  |       %,d |%s", stats.getTotalRequestsCount(), LN);
             writer.printf(
-                    "| Средний размер ответа |      %,.2fb |\n",
-                    stats.getResponseSizeInBytes().getAverage());
+                    "| Средний размер ответа |      %,.2f b |%s",
+                    stats.getResponseSizeInBytes().getAverage(), LN);
             writer.printf(
-                    "|  95p размера ответа   |      %,.2fb |\n",
-                    stats.getResponseSizeInBytes().getP95());
+                    "|  95p размера ответа   |      %,.2f b |%s",
+                    stats.getResponseSizeInBytes().getP95(), LN);
 
             // Топ ресурсов
-            writer.println("\n#### Запрашиваемые ресурсы\n");
-            writer.println("|     Ресурс      | Количество |");
-            writer.println("|:---------------:|-----------:|");
+            writer.printf("%s#### Запрашиваемые ресурсы%s%s", LN, LN, LN);
+            writer.printf("|     Ресурс      | Количество |%s", LN);
+            writer.printf("|:---------------:|-----------:|%s", LN);
             for (LogStatistics.ResourceCount rc : stats.getResources()) {
-                writer.printf("|  %-20s | %,11d |\n", "`" + rc.getResource() + "`", rc.getTotalRequestsCount());
+                writer.printf("|  %-20s | %,11d |%s", "`" + rc.getResource() + "`", rc.getTotalRequestsCount(), LN);
             }
 
             // Коды ответа
-            writer.println("\n#### Коды ответа\n");
-            writer.println("| Код |          Имя          | Количество |");
-            writer.println("|:---:|:---------------------:|-----------:|");
+            writer.printf("%s#### Коды ответа%s%s", LN, LN, LN);
+            writer.printf("| Код |          Имя          | Количество |%s", LN);
+            writer.printf("|:---:|:---------------------:|-----------:|%s", LN);
             List<LogStatistics.ResponseCodeCount> codes = stats.getResponseCodes();
             codes.sort((a, b) -> Integer.compare(b.getTotalResponsesCount(), a.getTotalResponsesCount()));
             for (LogStatistics.ResponseCodeCount c : codes) {
                 String name = statusCodeToName(c.getCode());
-                writer.printf("| %3d | %-21s | %,11d |\n", c.getCode(), name, c.getTotalResponsesCount());
+                writer.printf("| %3d | %-21s | %,11d |%s", c.getCode(), name, c.getTotalResponsesCount(), LN);
             }
 
             // Распределение по датам
-            writer.println("\n#### Распределение запросов по датам\n");
-            writer.println("|     Дата     |  День недели  | Количество | Процент |");
-            writer.println("|:------------:|:-------------:|:----------:|:-------:|");
+            writer.printf("%s#### Распределение запросов по датам%s%s", LN, LN, LN);
+            writer.printf("|     Дата     |  День недели  | Количество | Процент |%s", LN);
+            writer.printf("|:------------:|:-------------:|:----------:|:-------:|%s", LN);
             for (LogStatistics.RequestsPerDate d : stats.getRequestsPerDate()) {
                 writer.printf(
-                        "| %-12s | %-13s | %,11d | %7.2f%% |\n",
-                        d.getDate(), d.getWeekday(), d.getTotalRequestsCount(), d.getTotalRequestsPercentage());
+                        "| %-12s | %-13s | %,11d | %7.2f%% |%s",
+                        d.getDate(), d.getWeekday(), d.getTotalRequestsCount(), d.getTotalRequestsPercentage(), LN);
             }
 
             // Уникальные протоколы
             if (stats.getUniqueProtocols() != null
                     && !stats.getUniqueProtocols().isEmpty()) {
-                writer.println("\n#### Уникальные протоколы\n");
-                writer.println("`" + String.join("`, `", stats.getUniqueProtocols()) + "`");
+                writer.printf("%s#### Уникальные протоколы%s%s", LN, LN, LN);
+                writer.printf("`%s`%s", String.join("`, `", stats.getUniqueProtocols()), LN);
             }
 
         } catch (IOException e) {
@@ -74,8 +76,7 @@ public class MarkdownReporter implements Reporter {
     }
 
     private String formatDate(LocalDate date) {
-        if (date == null) return "-";
-        return date.format(DATE_FORMAT);
+        return date == null ? "-" : date.format(DATE_FORMAT);
     }
 
     private String statusCodeToName(int code) {
