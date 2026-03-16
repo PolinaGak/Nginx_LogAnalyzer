@@ -389,3 +389,4 @@ java -jar log-analyzer.jar --path logs/*.log --format markdown --output report.m
         - https://github.com/humio/ddsketch
 
 Для дополнительной справки: [HELP.md](./HELP.md)
+тест
